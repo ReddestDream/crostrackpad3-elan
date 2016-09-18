@@ -491,6 +491,8 @@ bool ProcessMove(PDEVICE_CONTEXT pDevice, csgesture_softc *sc, int abovethreshol
 bool ProcessScroll(PDEVICE_CONTEXT pDevice, csgesture_softc *sc, int abovethreshold, int iToUse[3]) {
 	if (!sc->settings.scrollEnabled)
 		return false;
+	if (sc->buttondown)
+		stop_scroll(pDevice);
 
 	sc->scrollx = 0;
 	sc->scrolly = 0;
@@ -892,17 +894,8 @@ void TapToClickOrDrag(PDEVICE_CONTEXT pDevice, csgesture_softc *sc, int button, 
 
 	int buttonmask = 0;
 
-	if (sc->scrollingActive)
+	if (sc->scrollingActive || sc->scrollInertiaActive)
 		return;
-
-	if (sc->scrollInertiaActive && !sc->scrollingActive) {
-		if (button == 1 && abovethreshold == 1 && nfingers == 1) {
-			stop_scroll(pDevice);
-			return;
-			}
-		else
-			return; 
-	}
 
 	switch (button) {
 	case 1:
