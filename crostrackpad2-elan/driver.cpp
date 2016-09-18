@@ -440,7 +440,12 @@ USHORT filterNegative(int val) {
 
 bool ProcessMove(PDEVICE_CONTEXT pDevice, csgesture_softc *sc, int abovethreshold, int nfingers, int iToUse[3]) {
 
-	if (abovethreshold == 1 || sc->panningActive) {
+	int mfingers = nfingers;
+	if (sc->buttondown)
+		mfingers = nfingers - 1;
+	//mfingers needs palm detction here to really be a viable solution.
+
+	if (abovethreshold == 1 && mfingers == 1 || sc->panningActive) {
 		int i = iToUse[0];
 		if (!sc->panningActive && sc->tick[i] < 5)
 			return false;
